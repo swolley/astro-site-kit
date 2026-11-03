@@ -1,0 +1,39 @@
+---
+import { fitTitle } from './seo.ts';
+
+interface Props {
+    /** Parts joined with " | ", the most specific first: the ones that do not fit are dropped from the right. */
+    title: string;
+    description: string;
+    siteName: string;
+    /** Absolute address of the 1200x630 share card. */
+    image: string;
+    imageAlt: string;
+    favicon: string;
+    /** Pages that are not real addresses (the 404) carry no canonical link. */
+    canonical?: boolean;
+    /** The path of the page this one repeats, when its canonical address is another page. */
+    canonicalPath?: string;
+}
+
+const { description, siteName, image, imageAlt, favicon, canonical: hasCanonical = true, canonicalPath } = Astro.props;
+const title = fitTitle(Astro.props.title);
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+{hasCanonical && <link rel="canonical" href={canonical} />}
+<meta property="og:site_name" content={siteName} />
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{hasCanonical && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/svg+xml" href={favicon} />
